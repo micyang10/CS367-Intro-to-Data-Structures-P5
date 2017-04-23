@@ -3,7 +3,7 @@ import java.util.List;
 
 public class NavigationGraph implements GraphADT<Location, Path> {
 
-	private List<GraphNode<Location, Path>> graph = new ArrayList<GraphNode<Location, Path>>();
+	private List<GraphNode<Location, Path>> graph;
 	
 	
     public NavigationGraph(String[] edgePropertyNames) {
