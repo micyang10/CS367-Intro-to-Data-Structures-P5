@@ -1,10 +1,13 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class NavigationGraph implements GraphADT<Location, Path> {
 
-	//TODO: Implement all methods of GraphADT
+	private List<GraphNode<Location, Path>> graph = new ArrayList<GraphNode<Location, Path>>();
 	
-	public NavigationGraph(String[] edgePropertyNames) {
+	
+    public NavigationGraph(String[] edgePropertyNames) {
+        
 	}
 
 	

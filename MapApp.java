@@ -26,6 +26,7 @@ public class MapApp {
 		this.graphObject = graph;
 	}
 
+	
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.out.println("Usage: java MapApp <pathToGraphFile>");
@@ -175,7 +176,7 @@ public class MapApp {
 	 *             if any property value is not numeric 
 	 */
 
-	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath){
+	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath) {
 			// TODO: read/parse the input file graphFilepath and create
 			// NavigationGraph with vertices and edges
 			return null;
