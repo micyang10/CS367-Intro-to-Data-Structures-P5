@@ -7,7 +7,10 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	
 	
     public NavigationGraph(String[] edgePropertyNames) {
-        
+        if (edgePropertyNames == null) {
+                throw new IllegalArgumentException();
+            }
+        graph = new ArrayList<GraphNode<Location, Path>>();
 	}
 
 	
@@ -19,7 +22,12 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return Location object
 	 */
 	public Location getLocationByName(String name) {
-		return null; //TODO: implement correctly. 
+		 for (GraphNode<Location, Path> node : graph) {
+		     if (node.getVertexData().getName().equals(name)) {
+		         return node.getVertexData();
+		     } 
+		 }
+		 return null;
 	}
 
 
