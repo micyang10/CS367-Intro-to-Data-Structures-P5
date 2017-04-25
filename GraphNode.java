@@ -13,7 +13,7 @@ import java.util.List;
  * 
  * @author CS367
  */
-public class GraphNode<V, E> {
+   public class GraphNode<V, E> {
 
 	private int id;
 	private V vertexData;

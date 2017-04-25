@@ -4,6 +4,7 @@ import java.util.List;
 public class NavigationGraph implements GraphADT<Location, Path> {
 
 	private List<GraphNode<Location, Path>> graph;
+	private String[] edgePropertyNames;
 	
 	
     public NavigationGraph(String[] edgePropertyNames) {
@@ -11,6 +12,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
                 throw new IllegalArgumentException();
             }
         graph = new ArrayList<GraphNode<Location, Path>>();
+        this.edgePropertyNames = edgePropertyNames;
 	}
 
 	
@@ -33,36 +35,65 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
     @Override
     public void addVertex(Location vertex) {
-        // TODO Auto-generated method stub
-        
+        //Since no verticies are removed, graph.size will be the number of the next vertex (with first vertex being 0)
+        graph.add(new GraphNode<Location, Path>(vertex, graph.size())); 
+                                                                       
     }
 
 
     @Override
     public void addEdge(Location src, Location dest, Path edge) {
-        // TODO Auto-generated method stub
+        for (GraphNode<Location, Path> node : graph  ) {
+            if (node.getVertexData().equals(src)) {
+                List<Path> temp = node.getOutEdges();
+                temp.add(edge);
+                node.setOutEdges(temp);
+                return;  // No need to continue method and search once found so return
+            }
+        }
         
     }
 
 
     @Override
     public List<Location> getVertices() {
-        // TODO Auto-generated method stub
-        return null;
+        List<Location> vertList = new ArrayList<Location>();
+        for (GraphNode<Location, Path> node: graph) {
+            vertList.add(node.getVertexData());
+        }
+        return vertList;
     }
 
 
     @Override
     public Path getEdgeIfExists(Location src, Location dest) {
-        // TODO Auto-generated method stub
+        
+        List<Path> pathList = getOutEdges(src);       
+        
+        if (pathList == null) {
+            return null;
+        }
+        
+        for (Path path : pathList) {
+            if (path.getDestination().equals(dest)) {
+                return path;
+            }             
+        }
         return null;
+        
     }
 
 
     @Override
     public List<Path> getOutEdges(Location src) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Path> pathList = null; 
+        for (GraphNode<Location, Path> node: graph) {
+            if (node.getVertexData().equals(src)) {
+                pathList = node.getOutEdges();
+                break;
+            }
+        }
+        return pathList;
     }
 
 
