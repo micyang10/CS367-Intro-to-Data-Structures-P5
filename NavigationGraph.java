@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 public class NavigationGraph implements GraphADT<Location, Path> {
 
@@ -35,6 +38,12 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
     @Override
     public void addVertex(Location vertex) {
+        //Check if vertex already exists and return from method
+        for (GraphNode<Location, Path> node : graph) {
+            if (node.getVertexData().equals(vertex)) {
+                return;
+            }
+        }
         //Since no verticies are removed, graph.size will be the number of the next vertex (with first vertex being 0)
         graph.add(new GraphNode<Location, Path>(vertex, graph.size())); 
                                                                        
@@ -51,6 +60,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
                 return;  // No need to continue method and search once found so return
             }
         }
+        throw new IllegalArgumentException();
         
     }
 
@@ -93,28 +103,77 @@ public class NavigationGraph implements GraphADT<Location, Path> {
                 break;
             }
         }
+        if (pathList == null) {
+            throw new IllegalArgumentException();
+        }
         return pathList;
     }
 
 
     @Override
     public List<Location> getNeighbors(Location vertex) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Location> neighbors = new ArrayList<Location>();
+        List<Path> pathList = getOutEdges(vertex);
+        for (Path path : pathList) {
+            neighbors.add(path.getDestination());
+        }
+        return neighbors;
     }
 
 
     @Override
     public List<Path> getShortestRoute(Location src, Location dest, String edgePropertyName) {
-        // TODO Auto-generated method stub
+        
+        
         return null;
     }
 
 
     @Override
     public String[] getEdgePropertyNames() {
-        // TODO Auto-generated method stub
-        return null;
+        return edgePropertyNames;
     }
 
 }
+
+
+class Pair<K , V extends Comparable<V>> implements Comparable<Pair<K,V>>{
+    private K key;
+    private V value;
+    
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+    
+    public Pair(K key) {
+        this(key, null);
+    }
+    
+    public V getValue() {
+        return value;
+    } 
+    
+    public K getKey() {
+        return key;
+    }
+    
+    public void setValue(V value) {
+        this.value = value; 
+    }
+    
+    @Override
+    public int compareTo(Pair<K,V> other) {
+        if (other.getValue() == null) {
+           return 1; 
+        }
+        return other.getValue().compareTo(value);
+        
+    }
+    
+} 
+
+
+
+
+
