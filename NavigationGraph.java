@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -8,6 +9,10 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
 	private List<GraphNode<Location, Path>> graph;
 	private String[] edgePropertyNames;
+	private HashMap<Integer, List<Integer>> adjMatrix;
+	 
+	
+	
 	
 	
     public NavigationGraph(String[] edgePropertyNames) {
@@ -16,6 +21,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
             }
         graph = new ArrayList<GraphNode<Location, Path>>();
         this.edgePropertyNames = edgePropertyNames;
+        adjMatrix = new HashMap<Integer, List<Integer>>();
 	}
 
 	
@@ -45,22 +51,32 @@ public class NavigationGraph implements GraphADT<Location, Path> {
             }
         }
         //Since no verticies are removed, graph.size will be the number of the next vertex (with first vertex being 0)
-        graph.add(new GraphNode<Location, Path>(vertex, graph.size())); 
+        GraphNode<Location, Path>temp = new GraphNode<Location, Path>(vertex, graph.size());
+        graph.add(temp);
+        adjMatrix.put(temp.getId(), new ArrayList<Integer>());
                                                                        
     }
 
 
     @Override
     public void addEdge(Location src, Location dest, Path edge) {
-        for (GraphNode<Location, Path> node : graph  ) {
+        GraphNode<Location, Path> srcNode = null;
+        for (GraphNode<Location, Path> node : graph  ) {           
             if (node.getVertexData().equals(src)) {
-                List<Path> temp = node.getOutEdges();
+                List<Path>temp = node.getOutEdges();
                 temp.add(edge);
                 node.setOutEdges(temp);
-                return;  // No need to continue method and search once found so return
+                srcNode = node;
+            }
+            if (node.getVertexData().equals(dest) && srcNode != null) {
+                List<Integer> entry = adjMatrix.remove(srcNode.getId());
+                entry.add(node.getId());
+                adjMatrix.put(srcNode.getId(), entry);
             }
         }
-        throw new IllegalArgumentException();
+        if (srcNode == null) {
+            throw new IllegalArgumentException();
+        }
         
     }
 
@@ -123,16 +139,91 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
     @Override
     public List<Path> getShortestRoute(Location src, Location dest, String edgePropertyName) {
+       PriorityQueue<Pair<GraphNode<Location, Path>, Double>> pq = new PriorityQueue<Pair<GraphNode<Location, Path>, Double>>();
+       List<Pair<GraphNode<Location, Path>, Double>> pairList = new ArrayList<Pair<GraphNode<Location, Path>, Double>>();
+       HashMap<GraphNode<Location, Path>,GraphNode<Location, Path>> pred = new HashMap<GraphNode<Location, Path>,GraphNode<Location, Path>>();      
+       int srcID = -1;
+       int property = -1;
+       GraphNode<Location, Path> destNode = null;
+       for (int i = 0; i < edgePropertyNames.length; i++) {
+           if (edgePropertyNames[i].equals(edgePropertyName)) {
+               property = i;
+               break;
+           } 
+       }
+       //IF property is -1 throw exception
+       
+       
+       for (GraphNode<Location, Path> node : graph) {
+           if (node.getVertexData().equals(src)) {
+               srcID = node.getId();
+               pairList.add(new Pair<GraphNode<Location, Path>, Double>(node, 0.0));
+           } else {
+           
+               pairList.add(new Pair<GraphNode<Location, Path>, Double>(node, Double.MAX_VALUE));
+           }
+           
+           if (node.getVertexData().equals(dest)) {
+               destNode = node;
+           }
+       }
+       //CHECK FOR SRCID = -1, destNode =null and if so throw exception 
+       pq.add(pairList.get(srcID));
+       while (!pq.isEmpty()) {
+           Pair<GraphNode<Location, Path>, Double> u = pq.poll();
+           for(GraphNode<Location, Path> v : getNeighboringGraphNodes(u.getKey())) {
+               Path temp = getEdgeIfExists(u.getKey().getVertexData(), v.getVertexData());
+               if (pairList.get(v.getId()).getValue() > u.getValue() + temp.getProperties().get(property)) {
+                   pairList.get(v.getId()).setValue( u.getValue() + temp.getProperties().get(property));
+                   pq.add(pairList.get(v.getId()));
+                   pred.put(v, u.getKey());
+               }
+           }
+       }
+       
+       
+       
+     // get destNode predecessor and get the path from its prdecessor to it  
+     // add path to list 
+     // keep going until u get to src
+     // reverse list then return it  
+       
+       if (pred.get(destNode) ==null) {
+           return new LinkedList<Path>();
+       }
         
+       List<Path> route = new LinkedList<Path>();
+       while (pred.get(destNode) !=null) {
+            route.add(getEdgeIfExists(pred.get(destNode).getVertexData(), destNode.getVertexData()));
+            destNode = pred.get(destNode);
+       }
+       
+       return route;
+       
+       
+       
         
-        return null;
     }
+    
+    
+    
+ 
+    
 
 
     @Override
     public String[] getEdgePropertyNames() {
         return edgePropertyNames;
     }
+    
+    private List<GraphNode<Location, Path>> getNeighboringGraphNodes(GraphNode<Location, Path> node) {
+       
+        List<GraphNode<Location, Path>> neighbors = new ArrayList<GraphNode<Location, Path>>();
+        for (Integer n : adjMatrix.get(node.getId())) {
+            neighbors.add(graph.get(n));
+        }
+        return neighbors;
+    } 
 
 }
 
