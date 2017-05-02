@@ -33,7 +33,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return Location object
 	 */
 	public Location getLocationByName(String name) {
-		 for (GraphNode<Location, Path> node : graph) {
+		name = name.toLowerCase(); 
+	    for (GraphNode<Location, Path> node : graph) {
 		     if (node.getVertexData().getName().equals(name)) {
 		         return node.getVertexData();
 		     } 
@@ -61,6 +62,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
     @Override
     public void addEdge(Location src, Location dest, Path edge) {
         GraphNode<Location, Path> srcNode = null;
+        GraphNode<Location, Path> destNode = null;
         for (GraphNode<Location, Path> node : graph  ) {           
             if (node.getVertexData().equals(src)) {
                 List<Path>temp = node.getOutEdges();
@@ -68,13 +70,19 @@ public class NavigationGraph implements GraphADT<Location, Path> {
                 node.setOutEdges(temp);
                 srcNode = node;
             }
+
+        } 
+        
+        for (GraphNode<Location, Path> node : graph) {
             if (node.getVertexData().equals(dest) && srcNode != null) {
+                destNode = node;
                 List<Integer> entry = adjMatrix.remove(srcNode.getId());
                 entry.add(node.getId());
                 adjMatrix.put(srcNode.getId(), entry);
             }
         }
-        if (srcNode == null) {
+        
+        if (srcNode == null || destNode == null) {
             throw new IllegalArgumentException();
         }
         

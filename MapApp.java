@@ -176,11 +176,59 @@ public class MapApp {
 	 *             if any property value is not numeric 
 	 */
 
-	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath) {
-			// TODO: read/parse the input file graphFilepath and create
-			// NavigationGraph with vertices and edges
-			return null;
+	public static NavigationGraph createNavigationGraphFromMapFile(String graphFilepath) throws FileNotFoundException, InvalidFileException {
+			File file = new File(graphFilepath);
+	        Scanner fstream = new Scanner(file);
+			String header = fstream.nextLine();
+			header =header.replace("Source Destination ", "");			
+			String[] arr = header.split(" ");
+			System.out.println(arr.length);
+			if (arr.length == 0) {
+			    throw new InvalidFileException("lengtherror");
+			}
+			for (int i = 0; i < arr.length; i++) {
+			   arr[i]= parse(arr[i]);
+			}
+	        NavigationGraph graph = new NavigationGraph(arr);
+	        int test = 0;
+	        while (fstream.hasNextLine()) {
+	           String fileLine = fstream.nextLine();
+	           String[] lineArr = fileLine.split(" ");
+	           if (lineArr.length != arr.length+2) {
+	               throw new InvalidFileException("" + lineArr.length + "badRow" + test++);
+	           }
+	           List<Double> list = new ArrayList<Double>();
+	           for(int i = 0; i < lineArr.length; i++) {
+	               if (i == 1 || i == 0) {
+	                   graph.addVertex(new Location(parse(lineArr[i])));
+	                   
+	               } else {
+	                   try {
+	                       double temp = Double.parseDouble(lineArr[i]);
+	                       if (temp < 0) {
+	                           list.add(1.0);
+	                       } else {
+	                           list.add(temp);
+	                       }
+	                   } catch (NumberFormatException e) {
+	                       throw new InvalidFileException("parseError");
+	                   }
+	                   
+	               }
+	               
+	               
+	           }
+	           Location srcL = graph.getLocationByName(parse(lineArr[0]));
+               Location destL = graph.getLocationByName(parse(lineArr[1]));
+	           graph.addEdge(srcL, destL, new Path(srcL, destL, list));
+	        }
+			
+			return graph;
 
+	}
+	
+	private static String parse(String text) {
+	    return text.replaceAll("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])", " ").toLowerCase().trim();
 	}
 
 }
