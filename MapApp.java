@@ -180,11 +180,12 @@ public class MapApp {
 			File file = new File(graphFilepath);
 	        Scanner fstream = new Scanner(file);
 			String header = fstream.nextLine();
-			header =header.replace("Source Destination ", "");			
+			header =header.replace("Source Destination ", "");
+			header =header.replace("source destination ", "");
 			String[] arr = header.split(" ");
 			//System.out.println(arr.length);
 			if (arr.length == 0) {
-			    throw new InvalidFileException("lengtherror");
+			    throw new InvalidFileException("Invalid File: Missing Headers");
 			}
 			for (int i = 0; i < arr.length; i++) {
 			   arr[i]= parse(arr[i]);
@@ -195,8 +196,9 @@ public class MapApp {
 	           String fileLine = fstream.nextLine();
 	           String[] lineArr = fileLine.split(" ");
 	           if (lineArr.length != arr.length+2) {
-	               throw new InvalidFileException("" + lineArr.length + "badRow" + test++);
+	               throw new InvalidFileException("Invalid File: Row_" + test + " Incomplete Entry");
 	           }
+	           
 	           List<Double> list = new ArrayList<Double>();
 	           for(int i = 0; i < lineArr.length; i++) {
 	               if (i == 1 || i == 0) {
@@ -211,13 +213,15 @@ public class MapApp {
 	                           list.add(temp);
 	                       }
 	                   } catch (NumberFormatException e) {
-	                       throw new InvalidFileException("parseError");
+	                       throw new InvalidFileException("Invalid File: Row_" + test + " " + lineArr[i] + " is not a Double!");
 	                   }
 	                   
 	               }
 	               
+	             
 	               
 	           }
+	           test++;
 	           Location srcL = graph.getLocationByName(parse(lineArr[0]));
                Location destL = graph.getLocationByName(parse(lineArr[1]));
 	           graph.addEdge(srcL, destL, new Path(srcL, destL, list));

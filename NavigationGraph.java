@@ -73,6 +73,11 @@ public class NavigationGraph implements GraphADT<Location, Path> {
         for (GraphNode<Location, Path> node : graph  ) {           
             if (node.getVertexData().equals(src)) {
                 List<Path>temp = node.getOutEdges();
+                for (Path tempPath : temp) {
+                    if (tempPath.getDestination().equals(src) && tempPath.getDestination().equals(dest)) {
+                        return;
+                    }
+                }
                 temp.add(edge);
                 node.setOutEdges(temp);
                 srcNode = node;
@@ -262,6 +267,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
             for (Path path : node.getOutEdges()) {
                 gString+= path.toString() + ", ";
             }
+            gString = gString.trim().split("(([,]$))")[0];
+            gString+= "\n";
         }
         gString = gString.trim().split("(([,]$))")[0];
         return gString;
