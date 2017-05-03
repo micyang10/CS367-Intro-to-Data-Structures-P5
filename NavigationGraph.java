@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -159,7 +160,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
                break;
            } 
        }
-       //IF property is -1 throw exception
+       if (property == -1) {
+           throw new IllegalArgumentException();
+       }
        
        
        for (GraphNode<Location, Path> node : graph) {
@@ -175,7 +178,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
                destNode = node;
            }
        }
-       //CHECK FOR SRCID = -1, destNode =null and if so throw exception 
+      if (destNode == null || srcID == -1) {
+          throw new IllegalArgumentException();
+      }
        pq.add(pairList.get(srcID));
        while (!pq.isEmpty()) {
            Pair<GraphNode<Location, Path>, Double> u = pq.poll();
@@ -191,10 +196,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
        
        
        
-     // get destNode predecessor and get the path from its prdecessor to it  
-     // add path to list 
-     // keep going until u get to src
-     // reverse list then return it  
+     
+  
        
        if (pred.get(destNode) ==null) {
            return new LinkedList<Path>();
@@ -205,7 +208,7 @@ public class NavigationGraph implements GraphADT<Location, Path> {
             route.add(getEdgeIfExists(pred.get(destNode).getVertexData(), destNode.getVertexData()));
             destNode = pred.get(destNode);
        }
-       
+       Collections.reverse(route);
        return route;
        
        
@@ -232,6 +235,18 @@ public class NavigationGraph implements GraphADT<Location, Path> {
         }
         return neighbors;
     } 
+    
+    @Override
+    public String toString() {
+        String gString = "";
+        for (GraphNode<Location, Path> node : graph) {
+            for (Path path : node.getOutEdges()) {
+                gString+= path.toString() + ", ";
+            }
+        }
+        gString = gString.trim().split("(([,]$))")[0];
+        return gString;
+    }
 
 }
 

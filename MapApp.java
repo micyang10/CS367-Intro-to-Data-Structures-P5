@@ -182,7 +182,7 @@ public class MapApp {
 			String header = fstream.nextLine();
 			header =header.replace("Source Destination ", "");			
 			String[] arr = header.split(" ");
-			System.out.println(arr.length);
+			//System.out.println(arr.length);
 			if (arr.length == 0) {
 			    throw new InvalidFileException("lengtherror");
 			}
