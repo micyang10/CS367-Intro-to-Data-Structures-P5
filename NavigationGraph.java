@@ -34,7 +34,10 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 	 * @return Location object
 	 */
 	public Location getLocationByName(String name) {
-		name = name.toLowerCase(); 
+		if (name == null) {
+		    throw new IllegalArgumentException();
+		}
+	    name = name.toLowerCase(); 
 	    for (GraphNode<Location, Path> node : graph) {
 		     if (node.getVertexData().getName().equals(name)) {
 		         return node.getVertexData();
@@ -46,6 +49,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
     @Override
     public void addVertex(Location vertex) {
+        if (vertex == null) {
+            throw new IllegalArgumentException();
+        }
         //Check if vertex already exists and return from method
         for (GraphNode<Location, Path> node : graph) {
             if (node.getVertexData().equals(vertex)) {
@@ -105,8 +111,8 @@ public class NavigationGraph implements GraphADT<Location, Path> {
         
         List<Path> pathList = getOutEdges(src);       
         
-        if (pathList == null) {
-            return null;
+        if (src == null || dest == null) {
+            throw new IllegalArgumentException();
         }
         
         for (Path path : pathList) {
@@ -137,6 +143,9 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
     @Override
     public List<Location> getNeighbors(Location vertex) {
+        if (vertex == null) {
+            throw new IllegalArgumentException();
+        }
         List<Location> neighbors = new ArrayList<Location>();
         List<Path> pathList = getOutEdges(vertex);
         for (Path path : pathList) {
@@ -148,7 +157,13 @@ public class NavigationGraph implements GraphADT<Location, Path> {
 
     @Override
     public List<Path> getShortestRoute(Location src, Location dest, String edgePropertyName) {
-       PriorityQueue<Pair<GraphNode<Location, Path>, Double>> pq = new PriorityQueue<Pair<GraphNode<Location, Path>, Double>>();
+       
+        if (src == null || dest == null || edgePropertyName == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        
+        PriorityQueue<Pair<GraphNode<Location, Path>, Double>> pq = new PriorityQueue<Pair<GraphNode<Location, Path>, Double>>();
        List<Pair<GraphNode<Location, Path>, Double>> pairList = new ArrayList<Pair<GraphNode<Location, Path>, Double>>();
        HashMap<GraphNode<Location, Path>,GraphNode<Location, Path>> pred = new HashMap<GraphNode<Location, Path>,GraphNode<Location, Path>>();      
        int srcID = -1;
@@ -229,6 +244,10 @@ public class NavigationGraph implements GraphADT<Location, Path> {
     
     private List<GraphNode<Location, Path>> getNeighboringGraphNodes(GraphNode<Location, Path> node) {
        
+        if (node == null) {
+            throw new IllegalArgumentException();
+        }
+        
         List<GraphNode<Location, Path>> neighbors = new ArrayList<GraphNode<Location, Path>>();
         for (Integer n : adjMatrix.get(node.getId())) {
             neighbors.add(graph.get(n));
